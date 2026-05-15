@@ -3,7 +3,11 @@
 // Uses Vercel KV (Redis) for persistent storage — free tier available.
 // Set up: https://vercel.com/docs/storage/vercel-kv
 
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+   const kv = new Redis({
+     url: process.env.UPSTASH_REDIS_REST_URL,
+     token: process.env.UPSTASH_REDIS_REST_TOKEN,
+   });
 
 const MAX_NAME = 50;
 const MAX_MESSAGE = 200;
