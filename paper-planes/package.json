@@ -1,0 +1,12 @@
+{
+  "name": "paper-planes",
+  "version": "1.0.0",
+  "description": "Send encouraging words into the sky — a shared paper plane message board",
+  "type": "module",
+  "dependencies": {
+    "@vercel/kv": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

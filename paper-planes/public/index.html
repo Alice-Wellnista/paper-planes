@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paper Planes ✈ — Send your words to the sky</title>
+  <meta name="description" content="Write an encouraging message, fold it into a paper plane, and let it fly to someone who needs it." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sky-top: #ddeef8;
+      --sky-mid: #f0e0f5;
+      --sky-bot: #fef5e4;
+      --card-glass: rgba(255,255,255,0.68);
+      --card-border: rgba(190,165,220,0.22);
+      --purple: #7a5aad;
+      --purple-light: #c4a8e8;
+      --text-main: #3e2e62;
+      --text-muted: #9a89bb;
+      --text-soft: #bbaed4;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(155deg, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-bot) 100%);
+      font-family: 'Lora', Georgia, serif;
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* ---- ANIMATED CLOUDS ---- */
+    .clouds {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .cloud {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.38);
+      filter: blur(22px);
+    }
+    .cloud-1 { width: 260px; height: 90px; top: 6%; left: 8%; animation: driftR 28s ease-in-out infinite; }
+    .cloud-2 { width: 180px; height: 65px; top: 14%; right: 12%; animation: driftL 22s ease-in-out infinite; animation-delay: -8s; }
+    .cloud-3 { width: 140px; height: 50px; top: 35%; left: 3%; animation: driftR 32s ease-in-out infinite; animation-delay: -4s; }
+    .cloud-4 { width: 200px; height: 75px; top: 55%; right: 5%; animation: driftL 25s ease-in-out infinite; animation-delay: -12s; }
+    .cloud-5 { width: 120px; height: 45px; top: 75%; left: 20%; animation: driftR 20s ease-in-out infinite; animation-delay: -6s; }
+
+    @keyframes driftR { 0%,100% { transform: translateX(0); } 50% { transform: translateX(18px); } }
+    @keyframes driftL { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-18px); } }
+
+    /* ---- LAYOUT ---- */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 6rem;
+    }
+
+    /* ---- HERO ---- */
+    .hero {
+      text-align: center;
+      padding: 2rem 0 1.5rem;
+    }
+    .hero-plane {
+      display: inline-block;
+      font-size: 3rem;
+      animation: soar 4s ease-in-out infinite;
+      margin-bottom: 0.75rem;
+      filter: drop-shadow(0 4px 12px rgba(130,90,180,0.2));
+    }
+    @keyframes soar {
+      0%,100% { transform: translateY(0) rotate(-8deg); }
+      50% { transform: translateY(-14px) rotate(4deg); }
+    }
+    .hero h1 {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(2.4rem, 6vw, 3.5rem);
+      font-weight: 700;
+      color: var(--purple);
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+    }
+    .hero p {
+      font-style: italic;
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-top: 0.6rem;
+      line-height: 1.6;
+    }
+
+    /* ---- COMPOSE CARD ---- */
+    .compose-card {
+      background: var(--card-glass);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 2rem 2.25rem 1.75rem;
+      backdrop-filter: blur(12px);
+      margin: 2rem auto;
+      max-width: 540px;
+      box-shadow: 0 4px 32px rgba(140,100,200,0.08);
+    }
+    .compose-card h2 {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--purple);
+      margin-bottom: 1.25rem;
+    }
+    .field-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      font-family: 'Lora', serif;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+    .text-field {
+      width: 100%;
+      border: none;
+      border-bottom: 1.5px solid rgba(160,130,200,0.28);
+      background: transparent;
+      padding: 0.5rem 0 0.6rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.3s;
+      margin-bottom: 1.25rem;
+      display: block;
+    }
+    .text-field::placeholder { color: var(--text-soft); }
+    .text-field:focus { border-bottom-color: var(--purple); }
+    textarea.text-field {
+      resize: none;
+      line-height: 1.7;
+      min-height: 90px;
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+    }
+    .char-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1.25rem;
+    }
+    .char-count {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      font-family: 'Lora', serif;
+    }
+    .char-count.near { color: #d08060; }
+
+    .throw-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: linear-gradient(135deg, #a17fc7 0%, #c78fb5 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 0.85rem 2rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s, opacity 0.2s;
+      box-shadow: 0 4px 18px rgba(160,120,200,0.28);
+    }
+    .throw-btn:hover:not(:disabled) {
+      transform: translateY(-3px) rotate(-2deg);
+      box-shadow: 0 10px 28px rgba(160,120,200,0.38);
+    }
+    .throw-btn:active:not(:disabled) { transform: scale(0.97); }
+    .throw-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ---- FLYING ANIMATION ---- */
+    .fly-plane {
+      position: fixed;
+      font-size: 2.2rem;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+      display: none;
+      filter: drop-shadow(0 4px 12px rgba(130,90,180,0.3));
+    }
+
+    /* ---- MESSAGES ---- */
+    .messages-section { margin-top: 3rem; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+    }
+    .section-header h2 {
+      font-family: 'Caveat', cursive;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: var(--purple);
+    }
+    .section-header .count-badge {
+      background: rgba(160,130,210,0.18);
+      color: var(--purple);
+      font-family: 'Lora', serif;
+      font-size: 0.78rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+      font-weight: 500;
+    }
+
+    .planes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .plane-card {
+      background: var(--card-glass);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.2rem 1.35rem 1rem;
+      backdrop-filter: blur(8px);
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: arrive 0.55s cubic-bezier(.22,1,.36,1) both;
+    }
+    .plane-card:hover {
+      transform: translateY(-5px) rotate(0.4deg);
+      box-shadow: 0 12px 28px rgba(140,100,200,0.12);
+    }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(22px) rotate(-2deg); }
+      to   { opacity: 1; transform: translateY(0) rotate(0deg); }
+    }
+
+    .card-accent {
+      position: absolute;
+      top: -11px;
+      right: 14px;
+      font-size: 1.1rem;
+      animation: float-sm 5s ease-in-out infinite;
+      animation-delay: var(--d, 0s);
+    }
+    @keyframes float-sm {
+      0%,100% { transform: translateY(0) rotate(-8deg); }
+      50% { transform: translateY(-6px) rotate(6deg); }
+    }
+
+    .card-message {
+      font-family: 'Caveat', cursive;
+      font-size: 1.15rem;
+      line-height: 1.65;
+      color: var(--text-main);
+      margin-top: 0.25rem;
+      word-break: break-word;
+    }
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.9rem;
+      gap: 0.5rem;
+    }
+    .card-from {
+      font-style: italic;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .card-time {
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      font-family: 'Lora', serif;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem 1rem;
+      font-style: italic;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+    .empty-state .big-plane { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; opacity: 0.5; }
+
+    .load-more-btn {
+      display: block;
+      margin: 1.75rem auto 0;
+      background: transparent;
+      border: 1.5px solid var(--purple-light);
+      color: var(--purple);
+      padding: 0.6rem 2rem;
+      border-radius: 50px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .load-more-btn:hover { background: rgba(160,130,200,0.1); transform: translateY(-2px); }
+    .load-more-btn:active { transform: scale(0.97); }
+    .load-more-btn[hidden] { display: none; }
+
+    .status-toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(80,60,120,0.9);
+      color: white;
+      padding: 0.65rem 1.5rem;
+      border-radius: 50px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      z-index: 9999;
+      backdrop-filter: blur(6px);
+    }
+    .status-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      font-style: italic;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 480px) {
+      .compose-card { padding: 1.5rem 1.25rem; }
+      .planes-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 360px) {
+      .planes-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="clouds" aria-hidden="true">
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="cloud cloud-4"></div>
+  <div class="cloud cloud-5"></div>
+</div>
+
+<main class="page">
+
+  <header class="hero">
+    <div class="hero-plane" aria-hidden="true">✈</div>
+    <h1>Paper Planes</h1>
+    <p>Fold your words into a plane &amp; let them find someone who needs them</p>
+  </header>
+
+  <section class="compose-card" aria-label="Write a message">
+    <h2>Write your note ✍</h2>
+
+    <label class="field-label" for="nameInput">Your name</label>
+    <input
+      class="text-field"
+      id="nameInput"
+      type="text"
+      placeholder="Stay anonymous, or leave your name…"
+      maxlength="50"
+      autocomplete="off"
+    />
+
+    <label class="field-label" for="msgInput">Your message</label>
+    <textarea
+      class="text-field"
+      id="msgInput"
+      placeholder="Write something kind — a word of courage, a gentle reminder, a spark of hope ✨"
+      maxlength="200"
+      rows="3"
+    ></textarea>
+    <div class="char-row">
+      <span class="char-count" id="charCount">0 / 200</span>
+    </div>
+
+    <button class="throw-btn" id="throwBtn" onclick="throwPlane()">
+      ✈ &nbsp;Throw it into the sky!
+    </button>
+  </section>
+
+  <section class="messages-section" aria-label="Messages from others">
+    <div class="section-header">
+      <h2>✈ Planes in the sky</h2>
+      <span class="count-badge" id="countBadge">…</span>
+    </div>
+    <div class="planes-grid" id="planesGrid">
+      <div class="empty-state">
+        <span class="big-plane">✈</span>
+        Loading messages…
+      </div>
+    </div>
+    <button class="load-more-btn" id="loadMoreBtn" hidden onclick="loadMore()">Load more ✈</button>
+  </section>
+
+</main>
+
+<footer>
+  made with kindness · paper planes float on love
+</footer>
+
+<div class="fly-plane" id="flyPlane" aria-hidden="true">✈</div>
+<div class="status-toast" id="toast" role="alert" aria-live="polite"></div>
+
+<script>
+  const CARD_COLORS = [
+    'rgba(235,215,255,0.75)',
+    'rgba(215,235,255,0.75)',
+    'rgba(255,228,215,0.75)',
+    'rgba(215,250,235,0.75)',
+    'rgba(255,215,235,0.75)',
+    'rgba(255,250,210,0.75)',
+  ];
+  const FLOAT_DELAYS = ['0s','0.8s','1.6s','2.4s','3.2s','0.4s'];
+
+  let page = 0;
+  const PER_PAGE = 12;
+  let totalCount = 0;
+
+  // --- char counter ---
+  const msgInput = document.getElementById('msgInput');
+  const charCount = document.getElementById('charCount');
+  msgInput.addEventListener('input', () => {
+    const n = msgInput.value.length;
+    charCount.textContent = n + ' / 200';
+    charCount.classList.toggle('near', n > 170);
+  });
+
+  // --- toast ---
+  function showToast(msg, ms = 2800) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  // --- escape html ---
+  function esc(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // --- time ago ---
+  function ago(ts) {
+    const s = (Date.now() - ts) / 1000;
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s/60) + 'm ago';
+    if (s < 86400) return Math.floor(s/3600) + 'h ago';
+    if (s < 86400*7) return Math.floor(s/86400) + 'd ago';
+    return new Date(ts).toLocaleDateString('en', {month:'short', day:'numeric'});
+  }
+
+  // --- build card html ---
+  function cardHTML(m, idx) {
+    const color = CARD_COLORS[idx % CARD_COLORS.length];
+    const delay = FLOAT_DELAYS[idx % FLOAT_DELAYS.length];
+    return `<article class="plane-card" style="background:${color};animation-delay:${Math.min(idx*0.06,0.5)}s" aria-label="Message from ${esc(m.name)}">
+      <span class="card-accent" style="--d:${delay}" aria-hidden="true">✈</span>
+      <p class="card-message">${esc(m.message)}</p>
+      <div class="card-meta">
+        <span class="card-from">— ${esc(m.name)}</span>
+        <span class="card-time">${ago(m.createdAt)}</span>
+      </div>
+    </article>`;
+  }
+
+  // --- load messages ---
+  async function loadMessages(reset = false) {
+    if (reset) { page = 0; document.getElementById('planesGrid').innerHTML = ''; }
+    try {
+      const res = await fetch(`/api/messages?page=${page}&limit=${PER_PAGE}`);
+      const data = await res.json();
+      totalCount = data.total;
+      document.getElementById('countBadge').textContent = totalCount + ' plane' + (totalCount !== 1 ? 's' : '');
+
+      const grid = document.getElementById('planesGrid');
+      const existing = grid.querySelectorAll('.plane-card').length;
+      if (data.messages.length === 0 && existing === 0) {
+        grid.innerHTML = `<div class="empty-state"><span class="big-plane">✈</span>No planes yet — be the first to throw one!</div>`;
+      } else {
+        // remove empty state if present
+        const empty = grid.querySelector('.empty-state');
+        if (empty) empty.remove();
+        data.messages.forEach((m, i) => {
+          grid.insertAdjacentHTML('beforeend', cardHTML(m, existing + i));
+        });
+      }
+      page++;
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      loadMoreBtn.hidden = (page * PER_PAGE >= totalCount);
+    } catch (e) {
+      console.error(e);
+      showToast('Could not load messages — please refresh');
+    }
+  }
+
+  function loadMore() { loadMessages(false); }
+
+  // --- throw plane ---
+  async function throwPlane() {
+    const name = document.getElementById('nameInput').value.trim() || 'Anonymous';
+    const message = msgInput.value.trim();
+    if (!message) {
+      msgInput.focus();
+      msgInput.style.borderBottomColor = '#e07a9a';
+      setTimeout(() => msgInput.style.borderBottomColor = '', 1200);
+      showToast('Write something first ✍', 2000);
+      return;
+    }
+
+    const btn = document.getElementById('throwBtn');
+    btn.disabled = true;
+
+    // flight animation
+    const fly = document.getElementById('flyPlane');
+    const rect = btn.getBoundingClientRect();
+    fly.style.cssText = `display:block; left:${rect.left + rect.width/2}px; top:${rect.top}px; transition:none; opacity:1; transform:translate(-50%,-50%)`;
+    requestAnimationFrame(() => {
+      fly.style.transition = 'left 1s cubic-bezier(.4,0,.2,1), top 1s cubic-bezier(.4,0,.2,1), opacity 0.8s, transform 1s';
+      fly.style.left = (window.innerWidth * 0.88) + 'px';
+      fly.style.top = (window.innerHeight * 0.08) + 'px';
+      fly.style.opacity = '0';
+      fly.style.transform = 'translate(-50%,-50%) scale(0.3) rotate(18deg)';
+    });
+
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, message })
+      });
+      if (!res.ok) throw new Error('Server error');
+
+      setTimeout(() => {
+        fly.style.display = 'none';
+        document.getElementById('nameInput').value = '';
+        msgInput.value = '';
+        charCount.textContent = '0 / 200';
+        btn.disabled = false;
+        showToast('Your plane is flying! ✈');
+        loadMessages(true);
+      }, 900);
+    } catch (e) {
+      fly.style.display = 'none';
+      btn.disabled = false;
+      showToast('Could not send — please try again');
+    }
+  }
+
+  // initial load
+  loadMessages(true);
+
+  // poll for new messages every 30s
+  setInterval(() => loadMessages(true), 30000);
+</script>
+</body>
+</html>
